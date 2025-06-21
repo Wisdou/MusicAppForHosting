@@ -129,7 +129,7 @@ dbContext.Database.Migrate();
 scope.Dispose();
 
 app.UseCors(e => e
-    .AllowAnyOrigin()
+    .WithOrigins(app.Configuration.GetSection("AllowedOrigins").Get<string[]>() ?? throw new InvalidDataException())
     .AllowAnyMethod()
     .AllowAnyHeader()
     .AllowCredentials());
