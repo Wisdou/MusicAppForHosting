@@ -1,6 +1,9 @@
 ﻿version: "3"
 
 name: music-service
+volumes:
+  db.data:
+  data-protection-keys:
 
 networks:
   dev:
@@ -16,6 +19,7 @@ services:
       - "80:80"
     volumes:
       - './nginx.conf:/etc/nginx/nginx.conf'
+      - data-protection-keys:/app/data-protection-keys
     depends_on:
       - webapi
     networks:
