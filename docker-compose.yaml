@@ -31,16 +31,3 @@ services:
       context: .
       dockerfile: MusicService.WebApi/Dockerfile
     restart: no
-    depends_on:
-      - music-service.database
-    
-  music-service.database:
-    image: postgres:16-bullseye
-    container_name: music-service.database
-    volumes:
-      - db.data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_DB=MusicServiceDb
-      - POSTGRES_USER=gen_user
-      - POSTGRES_PASSWORD=mPd~|F~3xpM@~I
-    restart: no
