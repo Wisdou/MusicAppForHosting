@@ -1,9 +1,5 @@
 ﻿name: music-service
 
-volumes:
-  db.data:
-  data-protection-keys:
-
 services:
   music-service.frontend:
     container_name: music-service.frontend
@@ -22,8 +18,6 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: "Development"
       ASPNETCORE_HTTP_PORTS: "5555"
-    volumes:
-      - data-protection-keys:/app/data-protection-keys
     image: music-service.webapi
     ports:
       - "5555:5555"
