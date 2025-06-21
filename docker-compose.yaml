@@ -41,6 +41,6 @@ services:
       - db.data:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=MusicServiceDb
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=12345678
+      - POSTGRES_USER=gen_user
+      - POSTGRES_PASSWORD=mPd~|F~3xpM@~I
     restart: no
