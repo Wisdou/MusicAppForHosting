@@ -1,4 +1,6 @@
-﻿name: music-service
+﻿version: "3"
+
+name: music-service
 
 services:
   music-service.frontend:
@@ -9,7 +11,7 @@ services:
       dockerfile: Dockerfile
     restart: no
     ports:
-      - "180:180"
+      - "80:80"
     depends_on:
       - music-service.webapi
   
