@@ -13,8 +13,8 @@ services:
     volumes:
       - './nginx.conf:/etc/nginx/nginx.conf'
     depends_on:
-      music-service.frontend
-      music-service.webapi
+      - music-service.frontend
+      - music-service.webapi
     networks:
       - dev
 
