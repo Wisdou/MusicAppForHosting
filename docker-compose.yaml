@@ -9,7 +9,7 @@ services:
       dockerfile: Dockerfile
     restart: no
     ports:
-      - "80:80"
+      - "180:180"
     depends_on:
       - music-service.webapi
   
