@@ -1,0 +1,175 @@
+﻿<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/equalizer.css">
+    <title>Главная</title>
+</head>
+<body>
+<div class="page-root">
+    <header>
+        <div class="logo-container">
+            <span>Музыкальный</span>
+            <svg xmlns="http://www.w3.org/2000/svg"
+                 width="30"
+                 height="30"
+                 viewBox="0 0 24 24"
+                 fill="black"
+                 stroke="currentColor"
+                 stroke-width="2"
+                 stroke-linecap="round"
+                 stroke-linejoin="round">
+                <polygon points="5 3, 19 12, 5 21, 5 3"></polygon>
+            </svg>
+            <span>Сервис</span>
+        </div>
+
+        <nav class="main-nav">
+            <a href="index.html">Все треки</a>
+            <a href="favorites.html">Избранное</a>
+            <a href="playlists.html">Плейлисты</a>
+        </nav>
+
+        <div class="user-account">
+            <span id="user-email">user@gmail.com</span>
+            <div class="account-dropdown">
+                <button id="sign-out-button" class="sign-out-button">
+                    <svg aria-hidden="true" focusable="false" viewBox="0 0 16 16" width="16" height="16"
+                         fill="currentColor">
+                        <path d="M2 2.75C2 1.784 2.784 1 3.75 1h2.5a.75.75 0 0 1 0 1.5h-2.5a.25.25 0 0 0-.25.25v10.5c0 .138.112.25.25.25h2.5a.75.75 0 0 1 0 1.5h-2.5A1.75 1.75 0 0 1 2 13.25Zm10.44 4.5-1.97-1.97a.749.749 0 0 1 .326-1.275.749.749 0 0 1 .734.215l3.25 3.25a.75.75 0 0 1 0 1.06l-3.25 3.25a.749.749 0 0 1-1.275-.326.749.749 0 0 1 .215-.734l1.97-1.97H6.75a.75.75 0 0 1 0-1.5Z"></path>
+                    </svg>
+                    <span>Выйти</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+            <h1>Все треки</h1>
+            <button class="add-new" id="add-new" onclick="OnAddTrackButtonClick()">+Загрузить трек</button>
+        </div>
+
+        <div class="audio-controls">
+            <button id="repeat-track-btn">🔁 Трек</button>
+            <button id="repeat-playlist-btn">🔁 Плейлист</button>
+            <button id="shuffle-playlist-btn">🔀 Случайно</button>
+            <button id="equalizer-btn">🎚️ Эквалайзер</button>
+        </div>
+
+        <ul id="tracks-list" class="tracks-list"></ul>
+    </main>
+
+    <footer></footer>
+
+    <div class="audio-player">
+        <audio id="audio" controls crossOrigin="use-credentials">
+            <source src="" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+    </div>
+
+</div>
+
+<div id="equalizerModal" class="modal">
+    <div class="modal-content modal-content-eq">
+        <div class="modal-header">
+            <h2>Эквалайзер</h2>
+            <span class="close-button" onclick="closeEqualizerModal()">&times;</span>
+        </div>
+
+        <select id="preset" style="font-size: 16px; margin-bottom: 15px;">
+            <option value="flat">Обычный</option>
+            <option value="bass">Басы</option>
+            <option value="classical">Классика</option>
+            <option value="pop">Поп</option>
+        </select>
+
+        <div id="eq-wrap" class="eq-wrap"></div>
+    </div>
+</div>
+
+
+<div id="addToPlaylistModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Выбрать плейлист</h2>
+            <span class="close-button" onclick="onCloseAddToPlaylistModalWindow()">&times;</span>
+        </div>
+
+        <form id="addToPlaylistForm" class="addTrackForm">
+            <label for="playlists-select">Плейлист:</label>
+            <select id="playlists-select" name="playlists-select">
+            </select>
+
+            <button class="add-track-button" type="submit">Подтвердить</button>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="addTrackModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Новый трек</h2>
+            <span class="close-button" onclick="onCloseAddingModalWindow()">&times;</span>
+        </div>
+
+        <form class="addTrackForm" id="addTrackForm" enctype="multipart/form-data">
+            <label for="coverInput">Обложка (PNG, JPEG):</label>
+            <input type="file" id="coverInput" name="cover" accept=".png, .jpeg, .jpg">
+
+            <label for="audioInput">Аудиофайл (MP3):</label>
+            <input type="file" id="audioInput" name="audio" accept=".mp3" required>
+
+            <fieldset>
+                <legend>Данные о треке</legend>
+
+                <label for="trackTitleInput">Название трека:</label>
+                <input type="text" id="trackTitleInput" name="title" required>
+
+                <label for="performerInput">Исполнитель:</label>
+                <input type="text" id="performerInput" name="performer" required>
+
+                <label for="genreSelect">Жанр:</label>
+                <select id="genreSelect" name="genre" required>
+                    <option value="Undefined">Не определен</option>
+                    <option value="Pop">Поп-музыка</option>
+                    <option value="Rock">Рок</option>
+                    <option value="Jazz">Джаз</option>
+                    <option value="Blues">Блюз</option>
+                    <option value="Classical">Классическая музыка</option>
+                    <option value="HipHop">Хип-хоп</option>
+                    <option value="Rap">Рэп</option>
+                    <option value="Electronic">Электронная музыка</option>
+                    <option value="Dance">Танцевальная музыка</option>
+                    <option value="RnB">R&B</option>
+                    <option value="Country">Кантри</option>
+                    <option value="Metal">Метал</option>
+                    <option value="Punk">Панк</option>
+                    <option value="Soul">Соул</option>
+                    <option value="Disco">Диско</option>
+                    <option value="Techno">Техно</option>
+                    <option value="House">Хаус</option>
+                    <option value="KPop">K-Pop</option>
+                    <option value="Opera">Опера</option>
+                </select>
+            </fieldset>
+
+            <pre id="errorMessage" class="errorMessage"></pre>
+
+            <button class="add-track-button" type="submit">Добавить трек</button>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js" integrity="sha512-YsR46MmyChktsyMMou+Bs74oCa/CDdwft7rJ5wlnmDzMj1mzqncsfJamEEf99Nk7IB0JpTMo5hS8rxB49FUktQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="js/index.js"></script>
+<script src="js/equalizer.js"></script>
+<script src="js/shared.js"></script>
+</body>
+</html>

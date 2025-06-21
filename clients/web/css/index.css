@@ -1,0 +1,139 @@
+﻿@import "reset.css";
+@import "shared.css";
+
+.add-new{
+    display: block;
+    background: transparent;
+    text-decoration: underline;
+    color: black;
+    font-size: 18px;
+    transition: all 0.3s;
+}
+
+.add-new:hover{
+    color: red;
+}
+
+/*Modal window*/
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+}
+
+.modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #1a1a1a;
+    color: #ffffff;
+    width: 600px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #333333;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.modal-header h2 {
+    font-size: 1.5rem;
+    margin: 0;
+    color: #ffcc00;
+}
+
+/* Кнопка закрытия */
+.close-button {
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #ffffff;
+    background: none;
+    border: none;
+    outline: none;
+    transition: color 0.2s ease;
+}
+
+.close-button:hover {
+    color: #ff3b3b;
+}
+
+.addTrackForm label {
+    display: block;
+    margin: 10px 0 5px;
+    font-size: 0.9rem;
+    color: #cccccc;
+}
+
+.addTrackForm input[type="text"],
+.addTrackForm input[type="file"],
+.addTrackForm select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    background: #2a2a2a;
+    border: 1px solid #444444;
+    border-radius: 6px;
+    color: #ffffff;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.addTrackForm input:focus,
+.addTrackForm select:focus {
+    border-color: #ffcc00;
+}
+
+.addTrackForm fieldset {
+    border: 1px solid #444444;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 15px;
+}
+
+.addTrackForm legend {
+    font-size: 1rem;
+    color: #ffcc00;
+    padding: 0 5px;
+}
+
+.add-track-button {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background: #ffcc00;
+    color: #1a1a1a;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.add-track-button:hover {
+    background: #e6b800;
+    color: #000000;
+}
+
+.errorMessage {
+    color: #ff3b3b;
+    font-size: 0.9rem;
+    margin-top: 10px;
+    white-space: pre-wrap;
+}

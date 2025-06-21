@@ -1,0 +1,11 @@
+﻿@import "reset.css";
+@import "shared.css";
+@import "index.css";
+
+.delete-icon{
+    display: block;
+}
+
+li.drag-over {
+    border: 2px dashed #555;
+}

@@ -1,0 +1,46 @@
+﻿name: music-service
+
+volumes:
+  db.data:
+  data-protection-keys:
+
+services:
+  music-service.frontend:
+    container_name: music-service.frontend
+    image: music-service.frontend
+    build:
+      context: ./clients/web
+      dockerfile: Dockerfile
+    restart: no
+    ports:
+      - "80:80"
+    depends_on:
+      - music-service.webapi
+  
+  music-service.webapi:
+    container_name: music-service.webapi
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      ASPNETCORE_HTTP_PORTS: "5555"
+    volumes:
+      - data-protection-keys:/app/data-protection-keys
+    image: music-service.webapi
+    ports:
+      - "5555:5555"
+    build:
+      context: .
+      dockerfile: MusicService.WebApi/Dockerfile
+    restart: no
+    depends_on:
+      - music-service.database
+    
+  music-service.database:
+    image: postgres:16-bullseye
+    container_name: music-service.database
+    volumes:
+      - db.data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=MusicServiceDb
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=12345678
+    restart: no

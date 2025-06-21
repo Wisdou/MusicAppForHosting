@@ -1,0 +1,21 @@
+﻿.eq-wrap {
+    display: flex;
+    gap: 5px;
+    margin-top: 20px;
+}
+
+.eq-band {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.eq-band input {
+    writing-mode: bt-lr;
+    -webkit-appearance: slider-vertical;
+    height: 100px;
+    width: 60px;
+}
+
+.modal-content-eq{
+    width: auto;
+}

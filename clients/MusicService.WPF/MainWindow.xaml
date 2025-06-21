@@ -1,0 +1,572 @@
+﻿<Window x:Class="MusicService.WPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        WindowState="Maximized"
+        WindowStartupLocation="CenterScreen"
+        d:DataContext="{d:DesignInstance vms:MainWindowViewModel}"
+        xmlns:vms="clr-namespace:MusicService.WPF.ViewModels"
+        xmlns:infr="clr-namespace:MusicService.WPF.Infrastructure"
+        xmlns:domain="clr-namespace:MusicService.Domain.Entities;assembly=MusicService.Domain"
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
+        Title="Главное окно" MinHeight="450" MinWidth="800">
+    <Window.Resources>
+        <infr:RoleNameVisibilityConverter x:Key="RoleNameVisibilityConverter" />
+        <infr:BoolVisibilityConverter x:Key="BoolVisibilityConverter" />
+    </Window.Resources>
+    <Grid>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <Border BorderThickness="0, 0, 0, 1"
+                    BorderBrush="Black"
+                    Padding="10">
+                <UniformGrid Columns="3">
+                    <StackPanel Orientation="Horizontal"
+                                VerticalAlignment="Center">
+                        <StackPanel.Resources>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="FontSize" Value="18" />
+                                <Setter Property="FontWeight" Value="500" />
+                            </Style>
+                        </StackPanel.Resources>
+                        <TextBlock Text="Музыкальный" />
+                        <TextBlock Text="▶" Foreground="#BFB030" Margin="5, 0, 5, 0" />
+                        <TextBlock Text="Сервис" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal"
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Center">
+                        <StackPanel.Resources>
+                            <Style TargetType="Button">
+                                <Setter Property="FontSize" Value="18" />
+                                <Setter Property="Background" Value="Transparent" />
+                                <Setter Property="BorderThickness" Value="0" />
+                            </Style>
+                        </StackPanel.Resources>
+                        <Button
+                            DataContext="{Binding DataContext.TracksPanelViewModel, RelativeSource={RelativeSource AncestorType=Window}}"
+                            Command="{Binding DataContext.PageChangedCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                            CommandParameter="{Binding}"
+                            Content="Все треки" />
+                        <Button Content="Избранное" Margin="20, 0, 0, 0" 
+                                DataContext="{Binding DataContext.FavoritesPanelViewModel, RelativeSource={RelativeSource AncestorType=Window}}"
+                                Command="{Binding DataContext.PageChangedCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                CommandParameter="{Binding}"/>
+                    </StackPanel>
+
+                    <StackPanel VerticalAlignment="Center"
+                                HorizontalAlignment="Right">
+                        <TextBlock FontSize="16" Text="{Binding CurrentUser.Email}" />
+                        <Button Background="Transparent"
+                                Command="{Binding SignOutCommand}"
+                                CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
+                                BorderThickness="0">
+                            <TextBlock Text="Выйти из аккаунта"
+                                       FontSize="16"
+                                       TextDecorations="Underline"
+                                       Foreground="Red" />
+                        </Button>
+                    </StackPanel>
+                </UniformGrid>
+            </Border>
+
+            <ContentControl Grid.Row="1" Content="{Binding SelectedPage}">
+                <ContentControl.Resources>
+                    <DataTemplate DataType="{x:Type vms:TracksPanelViewModel}">
+                        <Border Padding="10">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+
+                                <Button Command="{Binding RefreshCommand}"
+                                        Content="Все треки"
+                                        HorizontalAlignment="Left"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        FontSize="24"
+                                        FontWeight="500" />
+
+                                <Button Background="Transparent"
+                                        Visibility="{Binding DataContext.CurrentUser.Role, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource RoleNameVisibilityConverter}, ConverterParameter={x:Static domain:Role.Admin}}"
+                                        HorizontalAlignment="Right"
+                                        Command="{Binding DataContext.AddTrackCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                        BorderThickness="0">
+                                    <TextBlock Text="+Загрузить трек"
+                                               FontSize="16"
+                                               TextDecorations="Underline"
+                                               Foreground="Black" />
+                                </Button>
+
+                                <ListBox Grid.Row="1" ItemsSource="{Binding Tracks}"
+                                         HorizontalContentAlignment="Stretch"
+                                         BorderThickness="0"
+                                         SelectedItem="{Binding DataContext.SelectedTrack, RelativeSource={RelativeSource AncestorType=Window}}"
+                                         VerticalContentAlignment="Center">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Margin="10, 5">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+
+                                                <Image Source="{Binding Image}"
+                                                       Width="40"
+                                                       Height="40"
+                                                       VerticalAlignment="Center"
+                                                       Margin="0,0,10,0" />
+
+                                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding Track.Title}"
+                                                               FontWeight="Bold"
+                                                               FontSize="14" />
+                                                    <TextBlock Text="{Binding Track.Performer}"
+                                                               FontSize="12"
+                                                               Foreground="Gray" />
+                                                </StackPanel>
+
+                                                <StackPanel Grid.Column="2" VerticalAlignment="Center"
+                                                            Orientation="Horizontal">
+                                                    <Button Background="Transparent"
+                                                            BorderThickness="0"
+                                                            Margin="0, 0, 10, 0"
+                                                            Visibility="{Binding DataContext.CurrentUser.Role, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource RoleNameVisibilityConverter}, ConverterParameter={x:Static domain:Role.Admin}}"
+                                                            Command="{Binding DataContext.DeleteTrackCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                            CommandParameter="{Binding}">
+                                                        <Image Width="20"
+                                                               Height="20">
+                                                            <Image.Source>
+                                                                <DrawingImage>
+                                                                    <DrawingImage.Drawing>
+                                                                        <DrawingGroup>
+                                                                            <GeometryDrawing>
+                                                                                <GeometryDrawing.Geometry>
+                                                                                    <PathGeometry>
+                                                                                        <PathGeometry.Figures>
+                                                                                            <PathFigure
+                                                                                                IsClosed="False"
+                                                                                                StartPoint="20,9">
+                                                                                                <PathFigure.Segments>
+                                                                                                    <LineSegment
+                                                                                                        Point="18.005,20.3463" />
+                                                                                                    <LineSegment
+                                                                                                        Point="16.0353,22" />
+                                                                                                    <LineSegment
+                                                                                                        Point="7.96474,22" />
+                                                                                                    <LineSegment
+                                                                                                        Point="5.99496,20.3463" />
+                                                                                                    <LineSegment
+                                                                                                        Point="4,9" />
+                                                                                                </PathFigure.Segments>
+                                                                                            </PathFigure>
+                                                                                        </PathGeometry.Figures>
+                                                                                    </PathGeometry>
+                                                                                </GeometryDrawing.Geometry>
+                                                                                <GeometryDrawing.Pen>
+                                                                                    <Pen
+                                                                                        Brush="Black"
+                                                                                        StartLineCap="Round"
+                                                                                        LineJoin="Round"
+                                                                                        Thickness="1.5" />
+                                                                                </GeometryDrawing.Pen>
+                                                                            </GeometryDrawing>
+
+                                                                            <GeometryDrawing>
+                                                                                <GeometryDrawing.Geometry>
+                                                                                    <PathGeometry>
+                                                                                        <PathGeometry.Figures>
+                                                                                            <PathFigure
+                                                                                                IsClosed="False"
+                                                                                                StartPoint="21,6">
+                                                                                                <PathFigure.Segments>
+                                                                                                    <LineSegment
+                                                                                                        Point="15.375,6" />
+                                                                                                </PathFigure.Segments>
+                                                                                            </PathFigure>
+                                                                                            <PathFigure
+                                                                                                IsClosed="False"
+                                                                                                StartPoint="3,6">
+                                                                                                <PathFigure.Segments>
+                                                                                                    <LineSegment
+                                                                                                        Point="8.625,6" />
+                                                                                                </PathFigure.Segments>
+                                                                                            </PathFigure>
+                                                                                            <PathFigure
+                                                                                                IsClosed="False"
+                                                                                                StartPoint="8.625,6">
+                                                                                                <PathFigure.Segments>
+                                                                                                    <LineSegment
+                                                                                                        Point="8.625,4" />
+                                                                                                    <LineSegment
+                                                                                                        Point="10.625,2" />
+                                                                                                    <LineSegment
+                                                                                                        Point="13.375,2" />
+                                                                                                    <LineSegment
+                                                                                                        Point="15.375,4" />
+                                                                                                    <LineSegment
+                                                                                                        Point="15.375,6" />
+                                                                                                    <LineSegment
+                                                                                                        Point="8.625,6" />
+                                                                                                </PathFigure.Segments>
+                                                                                            </PathFigure>
+                                                                                        </PathGeometry.Figures>
+                                                                                    </PathGeometry>
+                                                                                </GeometryDrawing.Geometry>
+                                                                                <GeometryDrawing.Pen>
+                                                                                    <Pen
+                                                                                        Brush="Black"
+                                                                                        StartLineCap="Round"
+                                                                                        LineJoin="Round"
+                                                                                        Thickness="1.5" />
+                                                                                </GeometryDrawing.Pen>
+                                                                            </GeometryDrawing>
+                                                                        </DrawingGroup>
+                                                                    </DrawingImage.Drawing>
+                                                                </DrawingImage>
+
+                                                            </Image.Source>
+                                                        </Image>
+                                                    </Button>
+
+                                                    <Button Background="Transparent"
+                                                            BorderThickness="0"
+                                                            Visibility="{Binding IsNotInFavorites, Converter={StaticResource BoolVisibilityConverter}}"
+                                                            Command="{Binding DataContext.AddToFavoritesCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                            CommandParameter="{Binding}"
+                                                            Margin="0, 0, 10, 0">
+                                                        <Image Width="20"
+                                                               Height="20">
+                                                            <Image.Source>
+                                                                <DrawingImage>
+                                                                    <DrawingImage.Drawing>
+                                                                        <DrawingGroup
+                                                                            ClipGeometry="M0,0 V512 H512 V0 H0 Z">
+                                                                            <DrawingGroup.Transform>
+                                                                                <TranslateTransform
+                                                                                    X="23.811117172241211"
+                                                                                    Y="0.073985479772090912" />
+                                                                            </DrawingGroup.Transform>
+                                                                            <DrawingGroup
+                                                                                Transform="1,0,0,1,103.28515625,15.4920654296875">
+                                                                                <GeometryDrawing Brush="#FF000000"
+                                                                                    Geometry="F1 M512,512z M0,0z M0,0C1.37034264,-0.00461072 2.74068033,-0.0109648 4.11100769,-0.01890898 7.87132532,-0.03560222 11.63123672,-0.02735619 15.39155579,-0.0149641 19.44889067,-0.00591584 23.50615557,-0.01988222 27.56347656,-0.03088379 35.50967095,-0.04867601 43.45571427,-0.04482592 51.4019146,-0.03323323 57.8595898,-0.02420194 64.31722264,-0.02297358 70.77490234,-0.02732849 72.15321433,-0.02824789 72.15321433,-0.02824789 73.55937099,-0.02918586 75.42601142,-0.03046475 77.29265182,-0.03176161 79.15929222,-0.03307623 96.66532143,-0.04448408 114.17126687,-0.0313651 131.67728233,-0.00987476 146.70026143,0.00799641 161.72311689,0.00489236 176.74609375,-0.0135498 194.18921444,-0.03495288 211.63226169,-0.04338543 229.07539368,-0.03110075 230.93519083,-0.02982655 232.79498799,-0.02856906 234.65478516,-0.02732849 235.56985557,-0.02671139 236.48492598,-0.02609429 237.42772579,-0.02545848 243.87810465,-0.0220039 250.32843695,-0.02783627 256.77880859,-0.0372467 264.63902689,-0.04846182 272.49908538,-0.04543694 280.35928535,-0.02412373 284.37018759,-0.01360669 288.38082334,-0.00950246 292.39172363,-0.02272034 296.06322397,-0.03463679 299.73421073,-0.0280946 303.40566444,-0.00681013 305.36339495,-0.00022305 307.32116108,-0.01328694 309.27885437,-0.02703905 320.13233555,0.07016134 320.13233555,0.07016134 324.71484375,4.50793457 328.39984987,9.11879301 329.29313795,12.64833007 329.21820831,18.41345215 329.22402208,19.19522953 329.22983584,19.97700691 329.23582578,20.78247452 329.2504415,23.40611822 329.23653351,26.0288287 329.22277832,28.65246582 329.22738661,30.55078103 329.23373905,32.44909268 329.2416873,34.34739685 329.2584135,39.56707789 329.25011924,44.78646708 329.23774242,50.00614929 329.22870775,55.63404333 329.2426538,61.26188651 329.25366211,66.88977051 329.27146882,77.91607525 329.26759774,88.94227121 329.25601155,99.96858025 329.24698597,108.92815927 329.24574943,117.88770777 329.25010681,126.84729004 329.25071974,128.12141093 329.25133268,129.39553183 329.25196418,130.70826244 329.25324305,133.29643886 329.25453991,135.88461527 329.25585455,138.47279167 329.26694119,162.06201748 329.25543481,185.65117032 329.23448416,209.24038386 329.21550152,230.77751591 329.21720002,252.31455335 329.23632812,273.85168457 329.25774365,298.04523015 329.26616796,322.23870846 329.25387907,346.43226624 329.25260484,349.01103718 329.25134736,351.58980814 329.25010681,354.1685791 329.24918116,356.07189389 329.24918116,356.07189389 329.24823681,358.01365948 329.24477996,366.96472632 329.25061945,375.91575964 329.26002502,384.86682129 329.27123177,395.77196015 329.2682328,406.67698382 329.24690205,417.58210945 329.23637386,423.14839139 329.2323,428.71448111 329.24549866,434.28076172 329.25739164,439.37333501 329.25091104,444.46553736 329.22958845,449.55807686 329.22510926,451.4032104 329.22741805,453.24837508 329.2370916,455.09348869 329.24921276,457.59691366 329.23682477,460.09905936 329.21820831,462.60241699 329.22757298,463.32293873 329.23693764,464.04346046 329.24658608,464.78581619 329.17162879,469.81076484 327.82947719,472.61705335 324.71484375,476.50793457 320.06836121,480.92209298 315.82691309,480.97551718 309.71484375,481.03918457 303.22468286,479.88988525 298.18627993,474.55100417 293.21484375,470.44543457 288.08925821,466.24490867 282.94060688,462.08321611 277.71484375,458.00793457 271.9744415,453.52632053 266.31790203,448.94836144 260.67578125,444.34387207 256.39032757,440.85263374 252.07154922,437.40974569 247.71484375,434.00793457 241.97473707,429.52593347 236.31791129,424.948369 230.67578125,420.34387207 225.82706556,416.39376006 220.927615,412.51512919 215.99731445,408.66760254 211.58378776,405.21418746 207.23834529,401.68297311 202.90234375,398.13293457 196.75721508,393.10604831 190.49466857,388.26058095 184.16333008,383.47131348 178.14536668,378.8940371 172.30339434,374.12166762 166.51000977,369.26403809 164.59146758,367.66176239 162.65601136,366.08267272 160.71484375,364.50793457 160.09770508,363.9845752 159.48056641,363.46121582 158.84472656,362.92199707 156.86447542,361.27204541 156.86447542,361.27204541 153.71484375,359.50793457 148.69867671,360.09382288 144.52417574,364.75612916 140.77734375,367.94543457 139.24977607,369.22536825 137.72111584,370.50399905 136.19140625,371.78137207 135.05493652,372.7322168 135.05493652,372.7322168 133.89550781,373.70227051 130.85900581,376.21659752 127.76486154,378.65129276 124.65234375,381.07043457 119.62234737,384.98892549 114.65429659,388.97590902 109.71484375,393.00793457 104.19150718,397.51560671 98.62299778,401.95636224 93.00390625,406.34387207 88.53047667,409.84569704 84.11617173,413.41604622 79.71484375,417.00793457 74.1914469,421.5155343 68.62299939,425.95636099 63.00390625,430.34387207 58.53047667,433.84569704 54.11617173,437.41604622 49.71484375,441.00793457 44.19386143,445.51356382 38.62947379,449.95462408 33.01049805,454.33728027 29.16692876,457.34356089 25.37403538,460.40600225 21.59985352,463.49890137 18.31820812,466.18521941 15.01953352,468.85004504 11.71484375,471.50793457 11.17666016,471.9436377 10.63847656,472.37934082 10.08398438,472.82824707 4.47840797,477.32431094 -0.81929179,481.54778794 -8.28515625,481.50793457 -13.24868367,480.76747392 -16.98734838,479.30235354 -20.28515625,475.44543457 -23.2627224,471.07213428 -23.42985778,468.258668 -23.41937733,463.09460831 -23.42172956,462.3174463 -23.42408179,461.5402843 -23.4265053,460.73957193 -23.43321823,458.10784133 -23.43273639,455.47615985 -23.43232727,452.84442139 -23.43562447,450.94956249 -23.43934973,449.05470431 -23.44346875,447.15984702 -23.45351324,441.93122439 -23.45720947,436.70261325 -23.45985806,431.47398233 -23.46375385,425.84330663 -23.47333265,420.21264009 -23.48207092,414.58197021 -23.50185555,400.97346298 -23.51190393,387.36495497 -23.52079871,373.75643694 -23.52517822,367.35365349 -23.53054588,360.95087087 -23.53578758,354.54808807 -23.55280162,333.27368953 -23.56732189,311.99929194 -23.57453632,290.72488785 -23.57501108,289.34860344 -23.57548697,287.97231904 -23.57596399,286.59603463 -23.57620036,285.91350957 -23.57643674,285.23098451 -23.57668028,284.52777686 -23.5778815,281.06966537 -23.57909694,277.61155387 -23.58032227,274.15344238 -23.58056242,273.46716507 -23.58080257,272.78088776 -23.58104999,272.07381416 -23.58894461,249.81826109 -23.6123792,227.56276128 -23.64487821,205.30723147 -23.67916156,181.78691108 -23.69888492,158.26663336 -23.70218056,134.74628425 -23.70434893,121.92125862 -23.71314534,109.09631128 -23.73864174,96.2713089 -23.76030006,85.35145068 -23.76842319,74.43168974 -23.75867496,63.51181248 -23.75411615,57.93744572 -23.75610802,52.3632799 -23.7754364,46.78894043 -23.79296822,41.68882548 -23.79215193,36.58905954 -23.77653911,31.4889414 -23.77414779,29.64098859 -23.77856483,27.79301224 -23.79036776,25.94509557 -23.80539377,23.43784438 -23.79587944,20.93184472 -23.78014088,18.4246254 -23.79036308,17.70296027 -23.80058529,16.98129514 -23.81111726,16.23776138 -23.74194933,11.2077361 -22.40050417,8.40402009 -19.28515625,4.50793457 -13.72802421,-0.87367976 -7.27517832,-0.05110558 0,0z M8.71484375,32.50793457C8.71484375,163.51793457 8.71484375,294.52793457 8.71484375,429.50793457 11.67487393,428.02791948 13.56696293,426.96194324 16.0078125,424.92590332 16.62906006,424.41293701 17.25030762,423.8999707 17.89038086,423.37145996 18.88630249,422.54182739 18.88630249,422.54182739 19.90234375,421.69543457 25.56509156,417.03096297 31.29797718,412.49178592 37.15234375,408.07043457 43.75513462,403.07210975 50.17872025,397.89156925 56.54833984,392.60021973 61.46197231,388.52275685 66.4410924,384.54524785 71.47729492,380.62072754 75.9361321,377.13895175 80.33241241,373.58526908 84.71484375,370.00793457 90.23818032,365.50026243 95.80668972,361.0595069 101.42578125,356.67199707 105.8992143,353.17016939 110.31339194,349.59967539 114.71484375,346.00793457 144.91057166,321.38091156 144.91057166,321.38091156 152.27734375,321.07043457 153.26863281,321.00984863 154.25992188,320.9492627 155.28125,320.88684082 163.30073286,322.337464 169.82123272,329.06371047 175.90234375,334.19543457 177.39347477,335.43889008 178.88567673,336.68106237 180.37890625,337.92199707 181.11141602,338.53075684 181.84392578,339.1395166 182.59863281,339.76672363 185.61917586,342.25201586 188.69080886,344.66791607 191.77734375,347.07043457 196.80703457,350.98932667 201.77538092,354.97590086 206.71484375,359.00793457 211.67716619,363.05775524 216.66638395,367.06598651 221.71484375,371.00793457 227.45495043,375.48993567 233.11177621,380.06750014 238.75390625,384.67199707 243.03935993,388.1632354 247.35813828,391.60612345 251.71484375,395.00793457 257.44755192,399.48415876 263.09755446,404.05525979 268.73193359,408.65441895 273.78250854,412.76961119 278.88257359,416.81671847 284.0234375,420.81848145 286.73173673,422.93042769 289.38693112,425.07946507 291.98828125,427.32043457 294.39224047,429.71652946 294.39224047,429.71652946 296.71484375,429.50793457 296.71484375,298.49793457 296.71484375,167.48793457 296.71484375,32.50793457 201.67484375,32.50793457 106.63484375,32.50793457 8.71484375,32.50793457z" />
+                                                                            </DrawingGroup>
+                                                                        </DrawingGroup>
+                                                                    </DrawingImage.Drawing>
+                                                                </DrawingImage>
+
+                                                            </Image.Source>
+                                                        </Image>
+                                                    </Button>
+                                                    
+                                                    <TextBlock HorizontalAlignment="Right"
+                                                               Text="{Binding Track.Duration}"
+                                                               FontSize="12" />
+                                                </StackPanel>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+
+                            </Grid>
+                        </Border>
+
+                    </DataTemplate>
+                    
+                    <DataTemplate DataType="{x:Type vms:FavoritesPanelViewModel}">
+                        <Border Padding="10">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+
+                                <Button Command="{Binding RefreshCommand}"
+                                        Content="Избранное"
+                                        HorizontalAlignment="Left"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        FontSize="24"
+                                        FontWeight="500" />
+
+                                <ListBox Grid.Row="1" ItemsSource="{Binding Tracks}"
+                                         HorizontalContentAlignment="Stretch"
+                                         BorderThickness="0"
+                                         SelectedItem="{Binding DataContext.SelectedTrack, RelativeSource={RelativeSource AncestorType=Window}}"
+                                         VerticalContentAlignment="Center">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Margin="10, 5">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+
+                                                <Image Source="{Binding Image}"
+                                                       Width="40"
+                                                       Height="40"
+                                                       VerticalAlignment="Center"
+                                                       Margin="0,0,10,0" />
+
+                                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding Track.Title}"
+                                                               FontWeight="Bold"
+                                                               FontSize="14" />
+                                                    <TextBlock Text="{Binding Track.Performer}"
+                                                               FontSize="12"
+                                                               Foreground="Gray" />
+                                                </StackPanel>
+
+                                                <StackPanel Grid.Column="2" VerticalAlignment="Center"
+                                                            Orientation="Horizontal">
+                                                    <Button Background="Transparent"
+                                                            BorderThickness="0"
+                                                            Margin="0, 0, 10, 0"
+                                                            Command="{Binding DataContext.RemoveFromFavoritesCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                            CommandParameter="{Binding}">
+                                                        <Image Width="20"
+                                                               Height="20">
+                                                            <Image.Source>
+                                                                <DrawingImage>
+                                                                    <DrawingImage.Drawing>
+                                                                        <DrawingGroup>
+                                                                            <GeometryDrawing>
+                                                                                <GeometryDrawing.Geometry>
+                                                                                    <PathGeometry>
+                                                                                        <PathGeometry.Figures>
+                                                                                            <PathFigure
+                                                                                                IsClosed="False"
+                                                                                                StartPoint="20,9">
+                                                                                                <PathFigure.Segments>
+                                                                                                    <LineSegment
+                                                                                                        Point="18.005,20.3463" />
+                                                                                                    <LineSegment
+                                                                                                        Point="16.0353,22" />
+                                                                                                    <LineSegment
+                                                                                                        Point="7.96474,22" />
+                                                                                                    <LineSegment
+                                                                                                        Point="5.99496,20.3463" />
+                                                                                                    <LineSegment
+                                                                                                        Point="4,9" />
+                                                                                                </PathFigure.Segments>
+                                                                                            </PathFigure>
+                                                                                        </PathGeometry.Figures>
+                                                                                    </PathGeometry>
+                                                                                </GeometryDrawing.Geometry>
+                                                                                <GeometryDrawing.Pen>
+                                                                                    <Pen
+                                                                                        Brush="Black"
+                                                                                        StartLineCap="Round"
+                                                                                        LineJoin="Round"
+                                                                                        Thickness="1.5" />
+                                                                                </GeometryDrawing.Pen>
+                                                                            </GeometryDrawing>
+
+                                                                            <GeometryDrawing>
+                                                                                <GeometryDrawing.Geometry>
+                                                                                    <PathGeometry>
+                                                                                        <PathGeometry.Figures>
+                                                                                            <PathFigure
+                                                                                                IsClosed="False"
+                                                                                                StartPoint="21,6">
+                                                                                                <PathFigure.Segments>
+                                                                                                    <LineSegment
+                                                                                                        Point="15.375,6" />
+                                                                                                </PathFigure.Segments>
+                                                                                            </PathFigure>
+                                                                                            <PathFigure
+                                                                                                IsClosed="False"
+                                                                                                StartPoint="3,6">
+                                                                                                <PathFigure.Segments>
+                                                                                                    <LineSegment
+                                                                                                        Point="8.625,6" />
+                                                                                                </PathFigure.Segments>
+                                                                                            </PathFigure>
+                                                                                            <PathFigure
+                                                                                                IsClosed="False"
+                                                                                                StartPoint="8.625,6">
+                                                                                                <PathFigure.Segments>
+                                                                                                    <LineSegment
+                                                                                                        Point="8.625,4" />
+                                                                                                    <LineSegment
+                                                                                                        Point="10.625,2" />
+                                                                                                    <LineSegment
+                                                                                                        Point="13.375,2" />
+                                                                                                    <LineSegment
+                                                                                                        Point="15.375,4" />
+                                                                                                    <LineSegment
+                                                                                                        Point="15.375,6" />
+                                                                                                    <LineSegment
+                                                                                                        Point="8.625,6" />
+                                                                                                </PathFigure.Segments>
+                                                                                            </PathFigure>
+                                                                                        </PathGeometry.Figures>
+                                                                                    </PathGeometry>
+                                                                                </GeometryDrawing.Geometry>
+                                                                                <GeometryDrawing.Pen>
+                                                                                    <Pen
+                                                                                        Brush="Black"
+                                                                                        StartLineCap="Round"
+                                                                                        LineJoin="Round"
+                                                                                        Thickness="1.5" />
+                                                                                </GeometryDrawing.Pen>
+                                                                            </GeometryDrawing>
+                                                                        </DrawingGroup>
+                                                                    </DrawingImage.Drawing>
+                                                                </DrawingImage>
+
+                                                            </Image.Source>
+                                                        </Image>
+                                                    </Button>
+
+                                                    <TextBlock HorizontalAlignment="Right"
+                                                               Text="{Binding Track.Duration}"
+                                                               FontSize="12" />
+                                                </StackPanel>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+
+                            </Grid>
+                        </Border>
+
+                    </DataTemplate>
+                </ContentControl.Resources>
+            </ContentControl>
+
+            <StackPanel HorizontalAlignment="Center"
+                        Orientation="Horizontal"
+                        Grid.Row="2">
+
+                <MediaElement x:Name="MediaElement"
+                              LoadedBehavior="Manual"
+                              UnloadedBehavior="Manual"
+                              Stretch="Uniform" />
+
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock FontSize="16" Text="{Binding RunningTrack.Track.Title}" FontWeight="500" />
+                    <TextBlock FontSize="14" Text="{Binding RunningTrack.Track.Performer}" />
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Margin="10, 0, 0, 0">
+                    <Button Content="⏮️" Click="OnRewindClick" Width="50" Height="50" Margin="5" />
+                    <Button Content="▶️"
+                            Command="{Binding PlayCommand}"
+                            CommandParameter="{Binding ElementName=MediaElement}"
+                            Click="OnPlayClicked"
+                            Width="50" Height="50" Margin="5" />
+                    <Button Content="⏸️"
+                            Command="{Binding PauseCommand}"
+                            CommandParameter="{Binding ElementName=MediaElement}"
+                            Width="50"
+                            Height="50"
+                            Margin="5" />
+                    <Button Content="⏹️" Click="OnStopClick"
+                            Command="{Binding StopCommand}"
+                            Width="50" Height="50" Margin="5" />
+                    <Button Content="⏭️" Click="OnForwardClick" Width="50" Height="50" Margin="5" />
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Margin="0,10">
+                    <TextBlock Text="🔈" VerticalAlignment="Center" Margin="5" />
+                    <Slider VerticalAlignment="Center" x:Name="VolumeSlider" Minimum="0" Maximum="1" Value="0.5"
+                            Width="200" ValueChanged="OnVolumeChanged" />
+                    <TextBlock Text="🔊" VerticalAlignment="Center" Margin="5" />
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Margin="0,10">
+                    <TextBlock x:Name="CurrentTimeText" Text="00:00" VerticalAlignment="Center" Margin="5" />
+                    <Slider VerticalAlignment="Center" x:Name="ProgressSlider" Minimum="0" Maximum="100" Width="300"
+                            ValueChanged="OnProgressChanged" />
+                    <TextBlock x:Name="TotalTimeText" Text="{Binding SelectedTrack.Track.Duration}"
+                               VerticalAlignment="Center" Margin="5" />
+                </StackPanel>
+
+                <ComboBox x:Name="ComboBoxSpeed"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center"
+                          FontSize="16"
+                          SelectionChanged="Selector_OnSelectionChanged">
+                    <system:Double>0.25</system:Double>
+                    <system:Double>0.5</system:Double>
+                    <system:Double>1</system:Double>
+                    <system:Double>1.5</system:Double>
+                    <system:Double>2</system:Double>
+                </ComboBox>
+            </StackPanel>
+
+
+        </Grid>
+
+        <Grid Background="#80000000"
+              Visibility="{Binding DataContext.IsAddingRunning,
+      RelativeSource={RelativeSource AncestorType=Window},
+      Converter={StaticResource BoolVisibilityConverter}}"
+              DataContext="{Binding TrackAddViewModel}">
+            <Border Background="White" Padding="20" CornerRadius="10"
+                    MaxHeight="450"
+                    MaxWidth="750">
+                <StackPanel>
+                    <DockPanel Margin="0,0,0,20">
+                        <TextBlock DockPanel.Dock="Left" Text="Новый трек" FontSize="20" FontWeight="Bold" />
+                        <Button DockPanel.Dock="Right" Content="✖"
+                                Width="30" Height="30" Background="Transparent" BorderThickness="0"
+                                HorizontalAlignment="Right" VerticalAlignment="Top"
+                                Command="{Binding CloseCommand}" />
+                    </DockPanel>
+
+                    <StackPanel>
+                        <StackPanel.Resources>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="FontSize" Value="16" />
+                            </Style>
+                            <Style TargetType="TextBox">
+                                <Setter Property="FontSize" Value="16" />
+                                <Setter Property="Padding" Value="2" />
+                            </Style>
+                        </StackPanel.Resources>
+                        <TextBlock Text="Обложка (PNG, JPEG):" />
+                        <Button Command="{Binding SelectCoverCommand}">
+                            <TextBlock Text="{Binding CoverPath, TargetNullValue='Выбрать обложку'}" />
+                        </Button>
+
+                        <TextBlock Text="Аудиофайл (MP3):" Margin="0,10,0,0" />
+                        <Button Command="{Binding SelectAudioCommand}">
+                            <TextBlock Text="{Binding AudioPath, TargetNullValue='Выбрать аудио'}" />
+                        </Button>
+
+                        <TextBlock Text="Название трека:" Margin="0,10,0,0" />
+                        <TextBox Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}" />
+
+                        <TextBlock Text="Исполнитель:" Margin="0,10,0,0" />
+                        <TextBox Text="{Binding Performer, UpdateSourceTrigger=PropertyChanged}" />
+
+                        <TextBlock Text="Жанр:" Margin="0,10,0,0" />
+                        <ComboBox ItemsSource="{x:Static vms:TrackAddViewModel.TrackGenres}"
+                                  SelectedItem="{Binding Genre}"
+                                  DisplayMemberPath="DisplayTitle" />
+                    </StackPanel>
+
+                    <Button Content="Добавить трек" Margin="0,20,0,0"
+                            FontSize="22"
+                            Command="{Binding AddTrackCommand}"
+                            HorizontalAlignment="Stretch" />
+                </StackPanel>
+            </Border>
+        </Grid>
+
+    </Grid>
+</Window>
