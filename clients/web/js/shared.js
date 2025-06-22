@@ -1,4 +1,4 @@
-﻿const apiBaseUrl = "http://217.199.252.13/api";
+﻿const apiBaseUrl = "http://217.199.252.13/api/api";
 const defaultPageSize = 1000;
 
 let currentTrackId;
