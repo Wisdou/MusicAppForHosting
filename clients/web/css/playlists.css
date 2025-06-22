@@ -1,7 +1,4 @@
-﻿@import "reset.css";
-@import "shared.css";
-
-.add-new{
+﻿.add-new{
     display: flex;
     background: transparent;
     text-decoration: underline;

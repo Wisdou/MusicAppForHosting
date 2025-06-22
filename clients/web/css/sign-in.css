@@ -1,7 +1,4 @@
-﻿@import "reset.css";
-@import "shared.css";
-
-main {
+﻿main {
     display: flex;
     justify-content: center;
     align-items: center;

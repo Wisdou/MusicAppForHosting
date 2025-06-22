@@ -1,8 +1,4 @@
-﻿@import "reset.css";
-@import "shared.css";
-@import "index.css";
-
-.delete-icon{
+﻿.delete-icon{
     display: block;
 }
 
